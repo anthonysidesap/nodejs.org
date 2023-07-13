@@ -144,14 +144,14 @@ jobs:
           body-includes: '<!-- __NEXTJS_BUNDLE_nodejs.org -->'
 
       - name: Create Comment
-        uses: peter-evans/create-or-update-comment@v2
+        uses: peter-evans/create-or-update-comment@v3
         if: success() && github.event.number && steps.find-comment-id.outputs.comment-id == 0
         with:
           issue-number: ${{ github.event.number }}
           body: ${{ steps.get-comment-body.outputs.body }}
 
       - name: Update Comment
-        uses: peter-evans/create-or-update-comment@v2
+        uses: peter-evans/create-or-update-comment@v3
         if: success() && github.event.number && steps.find-comment-id.outputs.comment-id != 0
         with:
           issue-number: ${{ github.event.number }}
