@@ -104,7 +104,7 @@ jobs:
           restore-keys: cache-
 
       - name: Download PR Bundle Analysis
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4
         with:
           name: bundle-analysis
           path: .next/analyze
