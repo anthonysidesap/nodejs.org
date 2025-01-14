@@ -1,83 +1,32 @@
 {
   "$schema": "https://turbo.build/schema.json",
-  "pipeline": {
-    "test:unit": {
-      "inputs": [
-        "{components,hooks,layouts,providers,types,util}/**/*.{ts,tsx}",
-        "jest.config.mjs",
-        "jest.setup.mjs"
-      ],
-      "outputMode": "full"
+  "dangerouslyDisablePackageManagerCheck": true,
+  "tasks": {
+    "scripts:release-post": {
+      "cache": false
     },
-    "test:storybook": {
-      "inputs": [
-        "{components,hooks,layouts,providers,types,util}/**/*.{ts,tsx}"
-      ],
-      "outputMode": "full"
+    "//#prettier": {
+      "outputs": [".prettiercache"]
     },
     "lint": {
-      "inputs": [
-        "{components,hooks,layouts,providers,types,util,middlewares,app,pages}/**/*.{ts,tsx}",
-        "{components,layouts,pages,styles}/**/*.{css,sass,scss}",
-        "{scripts,next-data}/**/*.{js,mjs}",
-        "*.{md,mdx,json,ts,tsx,mjs,js}",
-        "pages/**/*.{mdx,md}",
-        "i18n/**/.json",
-        ".eslintrc",
-        ".eslintignore",
-        ".stylelintrc",
-        ".stylelintrc",
-        ".prettierrc",
-        ".prettierignore"
-      ],
-      "outputMode": "full"
+      "dependsOn": [
+        "@node-core/website#lint:md",
+        "@node-core/website#lint:css",
+        "lint:js"
+      ]
     },
-    "lint:fix": {
-      "outputMode": "full"
+    "lint:lint-staged": {
+      "dependsOn": [
+        "@node-core/website#lint:md",
+        "@node-core/website#lint:css",
+        "@node-core/website#lint:js"
+      ]
     },
-    "prettier": {
-      "outputMode": "full"
+    "check-types": {
+      "dependsOn": ["^topo"]
     },
-    "prettier:fix": {
-      "outputMode": "full"
-    },
-    "format": {
-      "outputMode": "full"
-    },
-    "serve": {
-      "cache": false
-    },
-    "build": {
-      "inputs": [
-        "{components,hooks,layouts,providers,types,util,middlewares,app,pages}/**/*.{ts,tsx}",
-        "{components,layouts,pages,styles}/**/*.{css,sass,scss}",
-        "{scripts,next-data}/**/*.{js,mjs}",
-        "*.{md,mdx,json,ts,tsx,mjs,js}",
-        "pages/**/*.{mdx,md}"
-      ],
-      "outputs": [".next/**", "!.next/cache/**"]
-    },
-    "start": {
-      "cache": false
-    },
-    "deploy": {
-      "inputs": [
-        "{components,hooks,layouts,providers,types,util,middlewares,app,pages}/**/*.{ts,tsx}",
-        "{components,layouts,pages,styles}/**/*.{css,sass,scss}",
-        "*.{md,mdx,json,ts,tsx,mjs,js}",
-        "pages/**/*.{mdx,md}"
-      ],
-      "outputs": [".next/**", "!.next/cache/**"]
-    },
-    "storybook": {
-      "cache": false
-    },
-    "storybook:build": {
-      "inputs": [
-        "{components,hooks,layouts,providers,types,util}/**/*.{ts,tsx}",
-        "{components,layouts,styles}/**/*.{css,sass,scss}"
-      ],
-      "outputs": ["storybook-static/**"]
+    "topo": {
+      "dependsOn": ["^topo"]
     }
   }
 }

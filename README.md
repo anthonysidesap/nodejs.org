@@ -2,22 +2,22 @@
   <br />
   <a href="https://nodejs.org">
     <picture>
-      <source media="(prefers-color-scheme: dark)" srcset="./public/static/images/logos/nodejs-new-pantone-white.svg">
-      <img src="./public/static/images/logos/nodejs-new-pantone-black.svg" width="200px">
+      <source media="(prefers-color-scheme: dark)" srcset="https://nodejs.org/static/logos/nodejsLight.svg">
+      <img src="https://nodejs.org/static/logos/nodejsDark.svg" width="200px">
     </picture>
   </a>
 </p>
 
 <p align="center">
-  <a href="https://nodejs.org">Node.js</a> Website built using Next.js with TypeScript, SCSS and MDXv2
+  <a href="https://nodejs.org">Node.js</a> Website built using Next.js with TypeScript, CSS Modules/Tailwind, and MDXv3
 </p>
 
 <p align="center">
   <a title="MIT License" href="LICENSE">
     <img src="https://img.shields.io/badge/license-MIT-blue" alt="MIT License" />
   </a>
-  <a title="Localised" href="https://crowdin.com/project/nodejs-website">
-    <img src="https://badges.crowdin.net/nodejs-website/localized.svg" alt="Crowdin Badge" />
+  <a title="Localised" href="https://crowdin.com/project/nodejs-web">
+    <img src="https://badges.crowdin.net/nodejs-web/localized.svg" alt="Crowdin Badge" />
   </a>
   <a title="Vercel" href="https://vercel.com">
     <picture>
@@ -25,11 +25,11 @@
       <img src="https://img.shields.io/badge/powered%20by-Vercel%20%E2%96%B2-black" alt="Powered by Vercel">
     </picture>
   </a>
-
   <br />
-
-  <img src="https://github.com/nodejs/nodejs.org/actions/workflows/build-and-analysis.yml/badge.svg" alt="Build and Analysis Checks" />
-
+  <img src="https://github.com/nodejs/nodejs.org/actions/workflows/build.yml/badge.svg" alt="Build and Analysis Checks" />
+  <a title="scorecard" href="https://securityscorecards.dev/viewer/?uri=github.com/nodejs/nodejs.org">
+    <img src="https://api.securityscorecards.dev/projects/github.com/nodejs/nodejs.org/badge" alt="nodejs.org scorecard badge" />
+  </a>
   <br />
   <br />
 </p>
@@ -38,29 +38,12 @@
 
 [Nodejs.org](https://nodejs.org/) by the [OpenJS Foundation](https://openjsf.org/) is the official website for the Node.js® JavaScript runtime. This repo is the source code for the website. It is built using [Next.js](https://nextjs.org), a React Framework.
 
-### Quick-Start Locally
-
 ```bash
 npm ci
-npx turbo serve
+npm run dev
 
 # listening at localhost:3000
 ```
-
-### Structure of this Repository
-
-- Page templates are in `/layouts`
-- Global styles are in `/styles`
-- Public files are in `/public`
-- i18n configuration is on `i18n/config.json`
-- Global static files are in `/public/static`
-  - Legacy static files are in `/public/static/legacy`
-- All content is in `/pages`
-  - Initial development usually happens in English: `/pages/en`
-  - `/i18n/locales/{{locale}}.json` is where global localization information lives.
-  - All content is in Markdown and is per locale.
-  - The top of each Markdown file is a block of YAML (Frontmatter) for page-specific localization information passed to various templates.
-  - The bulk of the Markdown content for each page is referenced as `{children}` on their respective JSX Layout (`layouts/`)
 
 ## Contributing
 
@@ -68,19 +51,40 @@ This project adopts the Node.js [Code of Conduct][].
 
 Any person who wants to contribute to the Website is welcome! Please read [Contribution Guidelines][] and see the [Figma Design][] to understand better the structure of this repository.
 
-### To translate content into other languages
+> \[!IMPORTANT]\
+> Please read our [Translation Guidelines][] before contributing to Translation and Localization of the Website
 
-If you want to help translate to other languages or improve existing translations, it is optional to work from GitHub. You can and should do it through Crowdin; this is the correct workflow.
-
-Crowdin is an online tool that facilitates the user experience for the translator; here is more information:
-
-Website translations are handled via [Crowdin](https://crowdin.com/project/nodejs-website).
-
-To help with localization, please read the [Translation](TRANSLATION.md) guide.
+> \[!NOTE]\
+> We recommend a read of all Relevant Links below before doing code changes; Including Dependency changes, Content changes, and Code changes.
 
 ### Deployment
 
-Full setup is in <https://github.com/nodejs/build/tree/master/ansible/www-standalone> minus secrets and certificates. The webhook is set up on GitHub for this project and talks to a small Node server on the host, which does the work. See the [github-webhook](https://github.com/rvagg/github-webhook) package for this.
+The Website is automatically deployed to [Vercel](https://vercel.com) through its GitHub App integration when new pushes happen on the `main` branch.
+
+Details regarding the deployment are only accessible to the maintainers of the Website Team due to certain limitations.
+
+The current integration is owned by the OpenJS Foundation and managed by the Website Team.
+
+<details>
+  <summary>Legacy Deployment</summary>
+
+The full setup is in <https://github.com/nodejs/build/tree/master/ansible/www-standalone> minus secrets and certificates.
+
+The webhook is set up on GitHub for this project and talks to a small Node server on the host, which does the work. See the [github-webhook](https://github.com/rvagg/github-webhook) package for this.
+
+</details>
+
+## Node.js Binaries & API Docs
+
+This repository does not contain the codebase or related infrastructure that serves `https://nodejs.org/api/`, `https://nodejs.org/docs/` or `https://nodejs.org/dist/`.
+
+These are maintained in different repositories and we urge users to open **issues in their respective repositories**, for bug reports, feature requests or any matter related to these endpoints.
+
+- [`release-cloudflare-worker`](https://github.com/nodejs/release-cloudflare-worker): The codebase responsible for serving the Node.js Distribution Binaries, API Docs and any other assets from the links mentioned above.
+  - We use Cloudflare R2 Buckets for storing our Assets and Cloudflare Workers for serving these Assets to the Web.
+- [`node/doc/api`](https://github.com/nodejs/node/tree/main/doc/api): The source code of our API docs, it contains all the Node.js API Documentation Markdown files
+  - [`node/doc`](https://github.com/nodejs/node/tree/main/doc) contains the HTML templates, CSS styles and JavaScript code that runs on the client-side of our API Docs generated pages.
+  - [`node/tools/doc`](https://github.com/nodejs/node/tree/main/tools/doc) contains the tooling that validates, lints, builds and compiles our API Docs. Also responsible for generating what you see when accessing `https://nodejs.org/api/`.
 
 ## Relevant Links
 
@@ -96,9 +100,25 @@ Full setup is in <https://github.com/nodejs/build/tree/master/ansible/www-standa
 
 [Dependency Pinning][]
 
+[Translation Guidelines][]
+
+[Status Page](https://status.nodejs.org/) of the Node.js web infrastructure.
+
+## Thanks
+
+- Thanks to all contributors and collaborators that make this project possible.
+- Thanks to [Chromatic](https://www.chromatic.com/) for providing the visual testing platform that helps us review UI changes and catch visual regressions.
+- Thanks to [Vercel](https://www.vercel.com/) for providing the infrastructure that serves and powers the Node.js Website
+- Thanks to [Cloudflare](https://cloudflare.com) for providing the infrastructure that serves Node.js's Website, Node.js's CDN and more.
+  - A really warm thank you to Cloudflare as we would not be able to serve our community without their immense support.
+- Thanks to [Sentry](https://sentry.io/welcome/) for providing an open source license for their error reporting, monitoring and diagnostic tools.
+- Thanks to [Crowdin](https://crowdin.com/) for providing a platform that allows us to localize the Node.js Website and collaborate with translators.
+- Thanks to [Orama](https://docs.oramasearch.com/) for providing a search platform that indexes our expansive content and provides lightning-fast results for our users.
+
 [code of conduct]: https://github.com/nodejs/admin/blob/main/CODE_OF_CONDUCT.md
-[contribution guidelines]: ./CONTRIBUTING.md
-[content vs code]: ./CONTENT_VS_CODE.md
-[dependency pinning]: ./DEPENDENCY_PINNING.md
-[collaborator guide]: ./COLLABORATOR_GUIDE.md
-[figma design]: https://www.figma.com/file/lOxAGGg5KXb6nwie7zXkz6/NJ---Design-System?node-id=22%3A6086
+[contribution guidelines]: https://github.com/nodejs/nodejs.org/blob/main/CONTRIBUTING.md
+[content vs code]: https://github.com/nodejs/nodejs.org/blob/main/CONTENT_VS_CODE.md
+[dependency pinning]: https://github.com/nodejs/nodejs.org/blob/main/DEPENDENCY_PINNING.md
+[collaborator guide]: https://github.com/nodejs/nodejs.org/blob/main/COLLABORATOR_GUIDE.md
+[figma design]: https://www.figma.com/file/pu1vZPqNIM7BePd6W8APA5/Node.js
+[translation guidelines]: https://github.com/nodejs/nodejs.org/blob/main/TRANSLATION.md

@@ -1,0 +1,225 @@
+# Security Notes
+# Only selected Actions are allowed within this repository. Please refer to (https://github.com/nodejs/nodejs.org/settings/actions)
+# for the full list of available actions. If you want to add a new one, please reach out a maintainer with Admin permissions.
+# REVIEWERS, please always double-check security practices before merging a PR that contains Workflow changes!!
+# AUTHORS, please only use actions with explicit SHA references, and avoid using `@master` or `@main` references or `@version` tags.
+
+name: Linting and Tests
+
+on:
+  push:
+    branches:
+      - main
+  pull_request_target:
+    branches:
+      - main
+    types:
+      - labeled
+  merge_group:
+
+defaults:
+  run:
+    # This ensures that the working directory is the root of the repository
+    working-directory: ./
+
+permissions:
+  contents: read
+  actions: read
+  # This permission is required by `MishaKav/jest-coverage-comment`
+  pull-requests: write
+
+jobs:
+  base:
+    name: Base Tasks
+    runs-on: ubuntu-latest
+    outputs:
+      turbo_args: ${{ steps.turborepo_arguments.outputs.turbo_args }}
+
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@0080882f6c36860b6ba35c610c98ce87d4e2f26f # v2.10.2
+        with:
+          egress-policy: audit
+
+      - name: Provide Turborepo Arguments
+        # This step is responsible for providing a reusable string that can be used within other steps and jobs
+        # that use the `turbo` cli command as a way of easily providing shared arguments to the `turbo` command
+        id: turborepo_arguments
+        # See https://turbo.build/repo/docs/reference/command-line-reference/run#--force
+        run: echo "turbo_args=--force=true" >> "$GITHUB_OUTPUT"
+
+  lint:
+    # This Job should run either on `merge_groups` or `push` events
+    # or `pull_request_target` event with a `labeled` action with a label named `github_actions:pull-request`
+    # since we want to run lint checks against any changes on pull requests, or the final patch on merge groups
+    # or if direct pushes happen to main (or when changes in general land on the `main` (default) branch)
+    # Note that the reason why we run this on pushes against `main` is that on rare cases, maintainers might do direct pushes against `main`
+    if: |
+      (github.event_name == 'push' || github.event_name == 'merge_group') ||
+      (github.event_name == 'pull_request_target' &&
+        github.event.label.name == 'github_actions:pull-request')
+
+    name: Quality checks
+    runs-on: ubuntu-latest
+    needs: [base]
+
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@0080882f6c36860b6ba35c610c98ce87d4e2f26f # v2.10.2
+        with:
+          egress-policy: audit
+
+      - name: Git Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          # Provides the Pull Request commit SHA or the GitHub merge group ref
+          ref: ${{ github.event_name == 'pull_request_target' && github.event.pull_request.head.sha || github.ref }}
+
+      - name: Restore Lint Cache
+        uses: actions/cache/restore@6849a6489940f00c2f30c0fb92c6274307ccb58a # v4.1.2
+        with:
+          path: |
+            .turbo/cache
+            node_modules/.cache
+            .eslintmdcache
+            .stylelintcache
+            .prettiercache
+          # We want to restore Turborepo Cache and ESlint and Prettier Cache
+          # The ESLint and Prettier cache's are useful to reduce the overall runtime of ESLint and Prettier
+          # as they will only run on files that have changed since the last cached run
+          # this might of course lead to certain files not being checked against the linter, but the chances
+          # of such situation from happening are very slim as the checksums of both files would need to match
+          key: cache-lint-${{ hashFiles('package-lock.json') }}-
+          restore-keys: |
+            cache-lint-${{ hashFiles('package-lock.json') }}-
+            cache-lint-
+
+      - name: Set up Node.js
+        uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4.1.0
+        with:
+          # We want to ensure that the Node.js version running here respects our supported versions
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+
+      - name: Install npm packages
+        # We want to avoid npm from running the Audit Step and Funding messages on a CI environment
+        # We also use `npm i` instead of `npm ci` so that the node_modules/.cache folder doesn't get deleted
+        run: npm i --no-audit --no-fund --ignore-scripts --userconfig=/dev/null
+
+      - name: Run quality checks with `turbo`
+        # We run the ESLint and Prettier commands on all Workflow triggers of the `Lint` job, besides if
+        # the Pull Request comes from a Crowdin Branch, as we don't want to run ESLint and Prettier on Crowdin PRs
+        # Note: Linting and Prettifying of files on Crowdin PRs is handled by the `translations-pr.yml` Workflow
+        if: |
+          (github.event_name == 'push' || github.event_name == 'merge_group') ||
+          (github.event_name == 'pull_request_target' &&
+            github.event.pull_request.head.ref != 'chore/crowdin')
+        # We want to enforce that the actual `turbo@latest` package is used instead of a possible hijack from the user
+        # the `${{ needs.base.outputs.turbo_args }}` is a string substitution happening from the base job
+        run: npx --package=turbo@latest -- turbo lint check-types prettier ${{ needs.base.outputs.turbo_args }}
+
+      - name: Save Lint Cache
+        # We only want to save caches on `push` events or `pull_request_target` events
+        # and if it is a `pull_request_target` event, we want to avoid saving the cache if the PR comes from Dependabot
+        # or if it comes from an automated Crowdin Pull Request
+        # The reason we save caches on `push` is because caches creates on `main` (default) branches can be reused within
+        # other Pull Requests and PRs coming from forks
+        if: |
+          github.event_name == 'push' ||
+          (github.event_name == 'pull_request_target' &&
+            startsWith(github.event.pull_request.head.ref, 'dependabot/') == false &&
+            github.event.pull_request.head.ref != 'chore/crowdin')
+        uses: actions/cache/save@6849a6489940f00c2f30c0fb92c6274307ccb58a # v4.1.2
+        with:
+          path: |
+            .turbo/cache
+            node_modules/.cache
+            .eslintmdcache
+            .stylelintcache
+            .prettiercache
+          key: cache-lint-${{ hashFiles('package-lock.json') }}-${{ hashFiles('.turbo/cache/**') }}
+
+  tests:
+    # This Job should run either on `merge_groups` or `push` events
+    # or `pull_request_target` event with a `labeled` action with a label named `github_actions:pull-request`
+    # since we want to run lint checks against any changes on pull requests and on final patches against a pull request.
+    # We don't need to execute the tests again on pushes against (`main`) as the merge group should already handle that
+    if: |
+      (github.event_name == 'push' || github.event_name == 'merge_group') ||
+      (github.event_name == 'pull_request_target' &&
+        github.event.label.name == 'github_actions:pull-request')
+
+    name: Tests
+    runs-on: ubuntu-latest
+    needs: [base]
+
+    environment:
+      name: Storybook
+      url: ${{ steps.chromatic-deploy.outputs.storybookUrl }}
+
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@0080882f6c36860b6ba35c610c98ce87d4e2f26f # v2.10.2
+        with:
+          egress-policy: audit
+
+      - name: Git Checkout
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        with:
+          # Provides the Pull Request commit SHA or the GitHub merge group ref
+          ref: ${{ github.event_name == 'pull_request_target' && github.event.pull_request.head.sha || github.ref }}
+          # The Chromatic (@chromaui/action) Action requires a full history of the current branch in order to be able to compare
+          # previous changes and previous commits and determine which Storybooks should be tested against and what should be built
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@39370e3970a6d050c480ffad4ff0ed4d3fdee5af # v4.1.0
+        with:
+          # We want to ensure that the Node.js version running here respects our supported versions
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+
+      - name: Install npm packages
+        # We want to avoid npm from running the Audit Step and Funding messages on a CI environment
+        # We also use `npm i` instead of `npm ci` so that the node_modules/.cache folder doesn't get deleted
+        run: npm i --no-audit --no-fund --userconfig=/dev/null
+
+      - name: Run Unit Tests
+        # We want to run Unit Tests in every circumstance, including Crowdin PRs and Dependabot PRs to ensure
+        # that changes to dependencies or translations don't break the Unit Tests
+        # We want to enforce that the actual `turbo@latest` package is used instead of a possible hijack from the user
+        # the `${{ needs.base.outputs.turbo_args }}` is a string substitution happening from the base job
+        run: npx --package=turbo@latest -- turbo test:unit ${{ needs.base.outputs.turbo_args }} -- --ci --coverage
+
+      - name: Start Visual Regression Tests (Chromatic)
+        # This assigns the Environment Deployment for Storybook
+        id: chromatic-deploy
+        # We only need to run Storybook Builds and Storybook Visual Regression Tests within Pull Requests that actually
+        # introduce changes to the Storybook. Hence, we skip running these on Crowdin PRs and Dependabot PRs
+        if: |
+          github.event_name == 'push' ||
+          (github.event_name == 'pull_request_target' &&
+            startsWith(github.event.pull_request.head.ref, 'dependabot/') == false &&
+            github.event.pull_request.head.ref != 'chore/crowdin')
+        # sha reference has no stable git tag reference or URL. see https://github.com/chromaui/chromatic-cli/issues/797
+        uses: chromaui/action@30b6228aa809059d46219e0f556752e8672a7e26
+        with:
+          workingDir: apps/site
+          buildScriptName: storybook:build
+          projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
+          exitOnceUploaded: true
+          onlyChanged: true
+
+      - name: Jest Coverage Comment
+        # We don't need to post the Jest Coverage comment on Crowdin PRs and Dependabot PRs
+        # as in general they introduce no changes to the Unit Tests and the Codebase
+        # We reuse the checks from the Chromatic Deploy step as they're the same conditions
+        if: steps.chromatic-deploy.outcome == 'success'
+        # This comments the current Jest Coverage Report containing JUnit XML reports
+        # and a Code Coverage Summary
+        uses: MishaKav/jest-coverage-comment@d74238813c33e6ea20530ff91b5ea37953d11c91 # v1.0.27
+        with:
+          title: 'Unit Test Coverage Report'
+          junitxml-path: ./apps/site/junit.xml
+          junitxml-title: Unit Test Report
+          coverage-summary-path: ./apps/site/coverage/coverage-summary.json
