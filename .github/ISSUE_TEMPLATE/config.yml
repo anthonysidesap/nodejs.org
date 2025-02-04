@@ -1,10 +1,16 @@
 blank_issues_enabled: true
 contact_links:
+  - name: Node.js Status Page
+    url: https://status.nodejs.org
+    about: 'Need to check if there is any ongoing incidents?'
   - name: Report an API Docs Issue on the Node.js Website
     url: https://github.com/nodejs/node/issues/new?assignees=&labels=doc&template=3-api-ref-docs-problem.yml
     about: 'Is something wrong with the API Docs? Did you face a bug with the API Docs?'
+  - name: Report an issue with downloading Node.js
+    url: https://github.com/nodejs/release-cloudflare-worker/issues/new
+    about: 'Is something wrong with Node.js downloads?'
   - name: Report a Translation Issue on the Node.js Website
-    url: https://crowdin.com/project/nodejs-website
+    url: https://crowdin.com/project/nodejs-web
     about: 'Is something wrong in a specific translation? Do you believe a language can get improved? Do you have suggestions?'
   - name: Need help with Node.js?
     url: https://github.com/nodejs/help/issues/

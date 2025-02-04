@@ -2,28 +2,33 @@
 node_modules
 npm-debug.log
 .npm
-
-# OSX system files, the bane of our existence
-.DS_Store
-.AppleDouble
-.LSOverride
+.env.*
 
 # Next.js Build Output
 .next
 build
 
-# Next.js Generated Files
-public/robots.txt
-public/sitemap.xml
-public/en/feed/*.xml
-
 # Jest
 coverage
 .swc
+junit.xml
 
 # Storybook
 storybook-static
+build-storybook.log
+.nyc_output
 
 # Vercel Files
 .vercel
 .turbo
+cache
+
+# Cache Files
+.eslintmdcache
+.stylelintcache
+.prettiercache
+
+# TypeScript
+tsconfig.tsbuildinfo
+
+dist/

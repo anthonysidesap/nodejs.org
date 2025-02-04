@@ -1,0 +1,36 @@
+---
+title: Rilisan Node.js
+layout: about
+---
+
+Rilisan Node.js
+
+Versi Node.js utama memasuki status rilis saat ini selama enam bulan, yang memberikan waktu bagi penulis perpustakaan untuk menambahkan dukungan untuk versi tersebut. Setelah enam bulan, rilis bernomor ganjil (9, 11, dst.) menjadi tidak didukung, dan rilis bernomor genap (10, 12, dst.) berpindah ke status LTS Aktif dan siap untuk penggunaan umum. Status rilis LTS adalah "dukungan jangka panjang", yang biasanya menjamin bahwa bug kritis akan diperbaiki selama total 30 bulan. Aplikasi produksi hanya boleh menggunakan rilis LTS Aktif atau LTS Pemeliharaan.
+
+## Jadwal rilis
+
+![Releases](https://raw.githubusercontent.com/nodejs/Release/main/schedule.svg?sanitize=true)
+
+Detail lengkap mengenai jadwal rilis Node.js tersedia [di GitHub](https://github.com/nodejs/release#release-schedule).
+
+### Dukungan Komersial
+
+Dukungan komersial untuk versi yang melewati fase Pemeliharaan tersedia melalui mitra Program Keberlanjutan Ekosistem OpenJS kami [HeroDevs](https://herodevs.com/).
+
+## Mencari rilis terbaru dari cabang versi?
+
+<DownloadReleasesTable />
+
+## Resmi vs Komunitas
+
+Situs web Node.js menawarkan sejumlah metode instalasi yang memungkinkan Node.js diinstal dengan cara non-interaktif, misalnya, melalui CLI, pengelola paket OS (seperti `apt`), atau pengelola versi Node.js (seperti `nvm`).
+
+Proyek Node.js, dalam upaya untuk mempopulerkan dan mengiklankan upaya komunitas, telah memperkenalkan halaman Unduhan baru yang mencantumkan metode instalasi Resmi dan Komunitas, yang menyediakan lebih banyak fleksibilitas dan opsi bagi pengguna.
+Dengan perubahan ini, kami memperkenalkan konsep metode instalasi "Resmi" dan "Komunitas". Agar dianggap "Resmi", metode instalasi harus memenuhi persyaratan berikut:
+
+| Persyaratan                                                                                                                    |
+| ------------------------------------------------------------------------------------------------------------------------------ |
+| Rilis Node.js baru harus tersedia secara bersamaan setelah rilis resmi                                                         |
+| Pengelola proyek memiliki hubungan dekat dengan Node.js, termasuk komunikasi langsung                                          |
+| Metode instalasi mengunduh biner resmi yang dibundel oleh proyek Node.js                                                       |
+| Metode instalasi **tidak** membangun dari sumber ketika biner tersedia, atau mengubah biner resmi yang disediakan oleh Node.js |

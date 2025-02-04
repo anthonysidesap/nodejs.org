@@ -1,0 +1,48 @@
+{
+  "title": "Node.js",
+  "description": "Node.js® is a JavaScript runtime built on Chrome's V8 JavaScript engine.",
+  "favicon": "/static/images/favicons/favicon.png",
+  "accentColor": "#333",
+  "twitter": {
+    "username": "@nodejs",
+    "card": "summary",
+    "img": "/static/images/logo-hexagon-card.png",
+    "imgAlt": "The Node.js Hexagon Logo"
+  },
+  "rssFeeds": [
+    {
+      "title": "Node.js Blog",
+      "file": "blog.xml",
+      "category": "all"
+    },
+    {
+      "title": "Node.js Blog: Releases",
+      "file": "releases.xml",
+      "category": "release"
+    },
+    {
+      "title": "Node.js Blog: Vulnerability Reports",
+      "file": "vulnerability.xml",
+      "category": "vulnerability"
+    }
+  ],
+  "websiteBanners": {
+    "index": {
+      "startDate": "2025-01-21T03:00:00.000Z",
+      "endDate": "2025-01-28T03:00:00.000Z",
+      "text": "January Security Release is available",
+      "link": "https://nodejs.org/en/blog/vulnerability/january-2025-security-releases",
+      "type": "warning"
+    }
+  },
+  "websiteBadges": {
+    "index": {
+      "startDate": "2024-11-01T00:00:00.000Z",
+      "endDate": "2024-12-31T00:00:00.000Z",
+      "kind": "default",
+      "title": "Read",
+      "text": "Node.js Collab Summit Report",
+      "link": "https://nodejs.org/en/blog/events/collab-summit-2024-dublin"
+    }
+  }
+}

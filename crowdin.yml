@@ -1,36 +1,52 @@
-commit_message: 'chore(i18n): added new translations from crowdin'
-pull_request_title: 'chore(i18n): crowdin sync'
-pull_request_labels:
-  - i18n
-  - crowdin
+project_id_env: 'CROWDIN_PROJECT_ID'
+api_token_env: 'CROWDIN_PERSONAL_TOKEN'
+append_commit_message: false
+
+# without this, crowdin will flatten all files
+preserve_hierarchy: true
+
 files:
-  - source: /pages/en/**/*.md
-    translation: /pages/%two_letters_code%/**/%original_file_name%
+  - source: /apps/site/pages/en/**/*.md
+    translation: /apps/site/pages/%two_letters_code%/**/%original_file_name%
     content_segmentation: 0
     ignore:
-      - /pages/en/blog/**/*.md
+      - /apps/site/pages/en/blog/**/*.md
+      - /apps/site/pages/en/learn/**/*.md
+      - /apps/site/pages/en/download/index.md
+      - /apps/site/pages/en/download/current.md
     languages_mapping:
       two_letters_code:
+        es-ES: es
         pt-BR: pt-br
         zh-CN: zh-cn
         zh-TW: zh-tw
-        es-ES: es
-  - source: /pages/en/**/*.mdx
-    translation: /pages/%two_letters_code%/**/%original_file_name%
+  - source: /apps/site/pages/en/**/*.mdx
+    translation: /apps/site/pages/%two_letters_code%/**/%original_file_name%
     content_segmentation: 0
     ignore:
-      - /pages/en/blog/**/*.mdx
+      - /apps/site/pages/en/blog/**/*.mdx
+      - /apps/site/pages/en/learn/**/*.mdx
     languages_mapping:
       two_letters_code:
+        es-ES: es
         pt-BR: pt-br
         zh-CN: zh-cn
         zh-TW: zh-tw
-        es-ES: es
-  - source: /i18n/locales/en.json
-    translation: /i18n/locales/%two_letters_code%.json
+  - source: /apps/site/snippets/en/**/*.bash
+    translation: /apps/site/snippets/%two_letters_code%/**/%original_file_name%
+    content_segmentation: 0
+    type: txt
     languages_mapping:
       two_letters_code:
+        es-ES: es
         pt-BR: pt-br
         zh-CN: zh-cn
         zh-TW: zh-tw
+  - source: /packages/i18n/locales/en.json
+    translation: /packages/i18n/locales/%two_letters_code%.json
+    languages_mapping:
+      two_letters_code:
         es-ES: es
+        pt-BR: pt-br
+        zh-CN: zh-cn
+        zh-TW: zh-tw
