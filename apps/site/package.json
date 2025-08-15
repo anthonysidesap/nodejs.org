@@ -87,7 +87,7 @@
     "@testing-library/user-event": "~14.6.1",
     "@types/mdx": "^2.0.13",
     "@types/semver": "~7.7.0",
-    "eslint-config-next": "15.4.4",
+    "eslint-config-next": "15.4.5",
     "eslint-import-resolver-typescript": "~4.4.4",
     "eslint-plugin-mdx": "~3.6.2",
     "eslint-plugin-react": "~7.37.4",
