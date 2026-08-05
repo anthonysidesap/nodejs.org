@@ -67,7 +67,7 @@
   },
   "devDependencies": {
     "@eslint-react/eslint-plugin": "~5.8.6",
-    "@next/eslint-plugin-next": "16.2.11",
+    "@next/eslint-plugin-next": "16.2.12",
     "@node-core/remark-lint": "workspace:*",
     "@orama/core": "^1.2.19",
     "@playwright/test": "^1.61.1",
